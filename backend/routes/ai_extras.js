@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const verifyToken = require('../middleware/auth');
+const { verifyToken } = require('../middleware/auth');
 const db = require('../db');
 
 async function callAI(userPrompt, systemPrompt = '') {

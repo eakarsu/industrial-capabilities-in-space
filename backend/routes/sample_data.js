@@ -2,7 +2,7 @@
 // Mounted at /api/admin via server.js. JWT-protected.
 const router = require('express').Router();
 const db = require('../db');
-const verifyToken = require('../middleware/auth');
+const { verifyToken } = require('../middleware/auth');
 
 const ENTITIES = ['missions', 'bases', 'mining', 'resources', 'print_jobs', 'equipment'];
 

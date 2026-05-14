@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const verifyToken = require('../middleware/auth');
+const { verifyToken } = require('../middleware/auth');
 
 async function callAI(userPrompt, systemPrompt = '') {
   const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {

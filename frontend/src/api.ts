@@ -10,6 +10,49 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
   return res.json();
 }
 
+// Audit-implementation helpers (2026-05-14)
+export const industrial = {
+  orbitalPlatforms: {
+    list: () => apiFetch('/orbital-platforms'),
+    get: (id: number) => apiFetch(`/orbital-platforms/${id}`),
+    utilization: () => apiFetch('/orbital-platforms/stats/utilization'),
+    products: () => apiFetch('/orbital-platforms/stats/products'),
+    batches: (id: number) => apiFetch(`/orbital-platforms/${id}/batches`),
+  },
+  isru: {
+    sites: () => apiFetch('/isru/sites'),
+    site: (id: number) => apiFetch(`/isru/sites/${id}`),
+    byProduct: () => apiFetch('/isru/production-by-product'),
+    byBody: () => apiFetch('/isru/production-by-body'),
+    efficiency: () => apiFetch('/isru/process-efficiency'),
+  },
+  launch: {
+    vehicles: () => apiFetch('/launch-economics/vehicles'),
+    costCurve: () => apiFetch('/launch-economics/stats/cost-curve'),
+    manifests: () => apiFetch('/launch-economics/manifests'),
+    recommend: (payload_mass_kg: number, destination = 'LEO', reuse_preferred = false) =>
+      apiFetch('/launch-economics/recommend', { method: 'POST', body: JSON.stringify({ payload_mass_kg, destination, reuse_preferred }) }),
+  },
+  products: {
+    list: (filters: { category?: string; min_trl?: number } = {}) => {
+      const qs = new URLSearchParams();
+      if (filters.category) qs.set('category', filters.category);
+      if (filters.min_trl) qs.set('min_trl', String(filters.min_trl));
+      return apiFetch('/microgravity-products' + (qs.toString() ? '?' + qs.toString() : ''));
+    },
+    roi: (id: number, batch_mass_g: number, opts: { launch_cost_per_kg_usd?: number; return_cost_per_kg_usd?: number; overhead_pct?: number } = {}) =>
+      apiFetch(`/microgravity-products/${id}/roi`, { method: 'POST', body: JSON.stringify({ batch_mass_g, ...opts }) }),
+  },
+  servicing: {
+    missions: () => apiFetch('/servicing/missions'),
+    mission: (id: number) => apiFetch(`/servicing/missions/${id}`),
+    byType: () => apiFetch('/servicing/stats/by-service-type'),
+    byOperator: () => apiFetch('/servicing/stats/by-operator'),
+    timeline: () => apiFetch('/servicing/stats/timeline'),
+    advance: (id: number, to: string) => apiFetch(`/servicing/missions/${id}/advance-status`, { method: 'POST', body: JSON.stringify({ to }) }),
+  },
+};
+
 export const api = {
   login: (email: string, password: string) => apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   getBases: () => apiFetch('/bases'), getBase: (id: number) => apiFetch(`/bases/${id}`),

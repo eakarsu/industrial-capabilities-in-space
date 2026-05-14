@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { Moon, Map, Pickaxe, Layers, Printer, Wrench, Rocket, Sparkles, LogOut, Filter, Database, LayoutDashboard } from 'lucide-react';
+import { Moon, Map, Pickaxe, Layers, Printer, Wrench, Rocket, Sparkles, LogOut, Filter, Database, LayoutDashboard, Factory, Droplet, Beaker, Satellite } from 'lucide-react';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -9,6 +9,14 @@ const navItems = [
   { to: '/print_jobs', icon: Printer, label: '3D Print Jobs' },
   { to: '/equipment', icon: Wrench, label: 'Equipment' },
   { to: '/missions', icon: Rocket, label: 'Missions' },
+];
+
+const industrialNav = [
+  { to: '/orbital-platforms', icon: Factory, label: 'Orbital Platforms' },
+  { to: '/isru', icon: Droplet, label: 'ISRU' },
+  { to: '/launch-economics', icon: Rocket, label: 'Launch Economics' },
+  { to: '/microgravity-products', icon: Beaker, label: 'µg Products' },
+  { to: '/servicing', icon: Satellite, label: 'Servicing' },
 ];
 
 export default function Layout() {
@@ -38,6 +46,16 @@ export default function Layout() {
               {label}
             </NavLink>
           ))}
+          <div className="pt-3 mt-3 border-t border-gray-800">
+            <p className="text-xs text-gray-600 px-3 pb-1 uppercase tracking-wider">Industrial Ops</p>
+            {industrialNav.map(({ to, icon: Icon, label }) => (
+              <NavLink key={to} to={to}
+                className={({ isActive }) => `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${isActive ? 'bg-emerald-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}>
+                <Icon className="w-4 h-4" />
+                {label}
+              </NavLink>
+            ))}
+          </div>
           <div className="pt-3 mt-3 border-t border-gray-800">
             <p className="text-xs text-gray-600 px-3 pb-1 uppercase tracking-wider">AI Center</p>
             <NavLink to="/ai"

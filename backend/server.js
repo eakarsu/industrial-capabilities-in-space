@@ -36,3 +36,10 @@ app.use('/api/cf-lunar-hibernation', require('./routes/cf-lunar-hibernation'));
 app.use('/api/cf-lunar-marketplace', require('./routes/cf-lunar-marketplace'));
 app.use('/api/cf-teleop-eva-agent', require('./routes/cf-teleop-eva-agent'));
 app.use('/api/cf-isru-cert-pipeline', require('./routes/cf-isru-cert-pipeline'));
+
+// Audit-implementation deep features (2026-05-14)
+app.use('/api/orbital-platforms', require('./routes/orbital-platforms'));
+app.use('/api/isru', require('./routes/isru'));
+app.use('/api/launch-economics', require('./routes/launch-economics'));
+app.use('/api/microgravity-products', require('./routes/microgravity-products'));
+app.use('/api/servicing', require('./routes/servicing'));

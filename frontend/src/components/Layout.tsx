@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { Moon, Map, Pickaxe, Layers, Printer, Wrench, Rocket, Sparkles, LogOut, Filter, Database, LayoutDashboard, Factory, Droplet, Beaker, Satellite } from 'lucide-react';
+import { Moon, Map, Pickaxe, Layers, Printer, Wrench, Rocket, Sparkles, LogOut, Filter, Database, LayoutDashboard, Factory, Droplet, Beaker, Satellite, BarChart3 } from 'lucide-react';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -55,6 +55,14 @@ export default function Layout() {
                 {label}
               </NavLink>
             ))}
+          </div>
+          <div className="pt-3 mt-3 border-t border-gray-800">
+            <p className="text-xs text-gray-600 px-3 pb-1 uppercase tracking-wider">Custom Views</p>
+            <NavLink to="/custom-views"
+              className={({ isActive }) => `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${isActive ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}>
+              <BarChart3 className="w-4 h-4" />
+              Space Cap Views
+            </NavLink>
           </div>
           <div className="pt-3 mt-3 border-t border-gray-800">
             <p className="text-xs text-gray-600 px-3 pb-1 uppercase tracking-wider">AI Center</p>

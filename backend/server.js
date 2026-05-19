@@ -43,3 +43,10 @@ app.use('/api/isru', require('./routes/isru'));
 app.use('/api/launch-economics', require('./routes/launch-economics'));
 app.use('/api/microgravity-products', require('./routes/microgravity-products'));
 app.use('/api/servicing', require('./routes/servicing'));
+
+// Custom Views — space capability aggregations (2026-05-18)
+app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'lunarbase-api', ts: Date.now() }));
+app.use('/api/custom-views', require('./routes/customViews'));
+
+// 404 fallback — MUST be after all routes
+app.use('/api', (req, res) => res.status(404).json({ error: 'Not Found', path: req.originalUrl }));

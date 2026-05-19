@@ -16,6 +16,7 @@ import IsruPage from './pages/IsruPage';
 import LaunchEconomicsPage from './pages/LaunchEconomicsPage';
 import MicrogravityProductsPage from './pages/MicrogravityProductsPage';
 import ServicingPage from './pages/ServicingPage';
+import CustomViewsPage from './pages/CustomViewsPage';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   return localStorage.getItem('token') ? <>{children}</> : <Navigate to="/login" />;
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="launch-economics" element={<LaunchEconomicsPage />} />
           <Route path="microgravity-products" element={<MicrogravityProductsPage />} />
           <Route path="servicing" element={<ServicingPage />} />
+          <Route path="custom-views" element={<CustomViewsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

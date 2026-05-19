@@ -36,3 +36,17 @@ app.use('/api/cf-lunar-hibernation', require('./routes/cf-lunar-hibernation'));
 app.use('/api/cf-lunar-marketplace', require('./routes/cf-lunar-marketplace'));
 app.use('/api/cf-teleop-eva-agent', require('./routes/cf-teleop-eva-agent'));
 app.use('/api/cf-isru-cert-pipeline', require('./routes/cf-isru-cert-pipeline'));
+
+// Audit-implementation deep features (2026-05-14)
+app.use('/api/orbital-platforms', require('./routes/orbital-platforms'));
+app.use('/api/isru', require('./routes/isru'));
+app.use('/api/launch-economics', require('./routes/launch-economics'));
+app.use('/api/microgravity-products', require('./routes/microgravity-products'));
+app.use('/api/servicing', require('./routes/servicing'));
+
+// Custom Views — space capability aggregations (2026-05-18)
+app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'lunarbase-api', ts: Date.now() }));
+app.use('/api/custom-views', require('./routes/customViews'));
+
+// 404 fallback — MUST be after all routes
+app.use('/api', (req, res) => res.status(404).json({ error: 'Not Found', path: req.originalUrl }));

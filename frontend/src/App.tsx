@@ -11,6 +11,12 @@ import AICenterPage from './pages/AICenterPage';
 import UtilitiesPage from './pages/UtilitiesPage';
 import SampleDataPage from './pages/SampleDataPage';
 import Dashboard from './pages/Dashboard';
+import OrbitalPlatformsPage from './pages/OrbitalPlatformsPage';
+import IsruPage from './pages/IsruPage';
+import LaunchEconomicsPage from './pages/LaunchEconomicsPage';
+import MicrogravityProductsPage from './pages/MicrogravityProductsPage';
+import ServicingPage from './pages/ServicingPage';
+import CustomViewsPage from './pages/CustomViewsPage';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   return localStorage.getItem('token') ? <>{children}</> : <Navigate to="/login" />;
@@ -34,6 +40,12 @@ export default function App() {
           <Route path="ai_lab" element={<Navigate to="/ai" replace />} />
           <Route path="utilities" element={<UtilitiesPage />} />
           <Route path="sample_data" element={<SampleDataPage />} />
+          <Route path="orbital-platforms" element={<OrbitalPlatformsPage />} />
+          <Route path="isru" element={<IsruPage />} />
+          <Route path="launch-economics" element={<LaunchEconomicsPage />} />
+          <Route path="microgravity-products" element={<MicrogravityProductsPage />} />
+          <Route path="servicing" element={<ServicingPage />} />
+          <Route path="custom-views" element={<CustomViewsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

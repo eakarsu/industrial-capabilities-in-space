@@ -135,3 +135,74 @@ Domain-appropriate landing page added as the FIRST sidebar item and post-login d
 - `GET /api/dashboard/stats` with bearer → **HTTP 200** (missions 30/2, bases 10/4, mining 30/20, resources 30, print_jobs 30/4, equipment 30/24; 2 audit rows).
 - `GET /api/dashboard/stats` without bearer → **HTTP 401**.
 - Cleanup: backend killed, port 3010 free. `password` column convention preserved (auth route untouched).
+
+## Apply pass 7 (full backlog implementation) (2026-05-21)
+
+Closed the remaining gap between the backend audit-feature routes (10 gap-* and 5
+cf-* routers, all already mounted in `server.js` before the `/api` 404 handler)
+and the frontend: the 15 page components existed under `frontend/src/pages/` but
+were never imported, routed, or linked, so the only way to exercise them was a
+hand-rolled `fetch`. Also surfaced the two existing Codex pages and the Insights
+Timeline view which were routed but had no sidebar entry. Additive only — no
+existing route or component was renamed or rewritten.
+
+### Items addressed
+- 10 gap-* feature pages routed under `/gap/<slug>` and linked in a new "Audit
+  Gaps" sidebar group (amber accent): regolith-process-optimizer,
+  lunar-night-power, orbital-mechanics-routing, print-quality-predictor,
+  crew-task-sequencer, simulation-twin, comms-latency-queue,
+  mission-video-stream, isru-yield, print-cad-upload.
+- 5 cf-* feature pages routed under `/cf/<slug>` and linked in a new "Capability
+  Features" sidebar group (pink accent): regolith-electrolysis,
+  lunar-hibernation, lunar-marketplace, teleop-eva-agent, isru-cert-pipeline.
+- 3 Codex / Insights entries (`/insights/timeline`, `/codex/custom-viz`,
+  `/codex/operations`) exposed in a new "Codex & Insights" sidebar group
+  (indigo accent). The routes already existed in `App.tsx`.
+- `gap_features` table (used by every cf-* / gap-* route, previously only
+  created lazily inside `ensureTable()` at first POST) added to `db/schema.sql`
+  with a `(feature_slug, created_at DESC)` index, so a fresh `psql -f schema.sql`
+  matches what the running app actually uses.
+
+### Endpoints / pages / tables
+- Frontend pages (no new files; existing components newly wired):
+  - `/gap/regolith-process-optimizer` → `GapRegolithProcessOptimizer.tsx`
+  - `/gap/lunar-night-power` → `GapLunarNightPower.tsx`
+  - `/gap/orbital-mechanics-routing` → `GapOrbitalMechanicsRouting.tsx`
+  - `/gap/print-quality-predictor` → `GapPrintQualityPredictor.tsx`
+  - `/gap/crew-task-sequencer` → `GapCrewTaskSequencer.tsx`
+  - `/gap/simulation-twin` → `GapSimulationTwin.tsx`
+  - `/gap/comms-latency-queue` → `GapCommsLatencyQueue.tsx`
+  - `/gap/mission-video-stream` → `GapMissionVideoStream.tsx`
+  - `/gap/isru-yield` → `GapIsruYield.tsx`
+  - `/gap/print-cad-upload` → `GapPrintCadUpload.tsx`
+  - `/cf/regolith-electrolysis` → `CfRegolithElectrolysis.tsx`
+  - `/cf/lunar-hibernation` → `CfLunarHibernation.tsx`
+  - `/cf/lunar-marketplace` → `CfLunarMarketplace.tsx`
+  - `/cf/teleop-eva-agent` → `CfTeleopEvaAgent.tsx`
+  - `/cf/isru-cert-pipeline` → `CfIsruCertPipeline.tsx`
+- Endpoints (already mounted, now reachable from the UI): the corresponding
+  `POST /api/gap-*` and `POST /api/cf-*` routes plus their `GET .../history`
+  siblings. No new endpoints were added in this pass.
+- Schema: `gap_features` table + `gap_features_slug_idx` index, both
+  `CREATE … IF NOT EXISTS` — safe re-run.
+
+### Skipped (per constraints)
+- `backend/routes/ai_extras.js` endpoints remain pure 503 stubs when
+  `OPENROUTER_API_KEY` is missing — already wired and intentionally left as-is.
+- Did not modify any existing page component, existing API helper, or existing
+  route file body — only `App.tsx`, `Layout.tsx`, and `schema.sql` were edited.
+
+### Syntax / build
+- `node --check backend/server.js` → OK (file unchanged; verified).
+- `cd frontend && npx tsc --noEmit` → 3 pre-existing errors only
+  (`CodexCustomVizFeature.tsx`, `LaunchEconomicsPage.tsx`,
+  `TimelineView.tsx`); zero new errors in `App.tsx` or `Layout.tsx`.
+- All 16 `lucide-react` icon names introduced in `Layout.tsx`
+  (Zap, Brain, Activity, Video, Cpu, FileCode2, Plug, Bed, ShoppingBag, Bot,
+  Award, Telescope, Gauge, Workflow, Radio, Compass) resolved against the
+  installed version of the package via `require('lucide-react')`.
+
+### Status
+DONE — all reachable backlog items implemented; no new dependencies added,
+no existing route or page rewritten, no breaking changes. Pure stubs and
+NEEDS-CREDS items left untouched per constraints.

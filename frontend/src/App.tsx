@@ -18,6 +18,27 @@ import MicrogravityProductsPage from './pages/MicrogravityProductsPage';
 import ServicingPage from './pages/ServicingPage';
 import CustomViewsPage from './pages/CustomViewsPage';
 
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
+
+import TimelineView from './pages/TimelineView';
+
+import GapRegolithProcessOptimizer from './pages/GapRegolithProcessOptimizer';
+import GapLunarNightPower from './pages/GapLunarNightPower';
+import GapOrbitalMechanicsRouting from './pages/GapOrbitalMechanicsRouting';
+import GapPrintQualityPredictor from './pages/GapPrintQualityPredictor';
+import GapCrewTaskSequencer from './pages/GapCrewTaskSequencer';
+import GapSimulationTwin from './pages/GapSimulationTwin';
+import GapCommsLatencyQueue from './pages/GapCommsLatencyQueue';
+import GapMissionVideoStream from './pages/GapMissionVideoStream';
+import GapIsruYield from './pages/GapIsruYield';
+import GapPrintCadUpload from './pages/GapPrintCadUpload';
+import CfRegolithElectrolysis from './pages/CfRegolithElectrolysis';
+import CfLunarHibernation from './pages/CfLunarHibernation';
+import CfLunarMarketplace from './pages/CfLunarMarketplace';
+import CfTeleopEvaAgent from './pages/CfTeleopEvaAgent';
+import CfIsruCertPipeline from './pages/CfIsruCertPipeline';
+
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   return localStorage.getItem('token') ? <>{children}</> : <Navigate to="/login" />;
 }
@@ -26,6 +47,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/insights/timeline" element={<TimelineView />} />
+        <Route path="/codex/custom-viz" element={<CodexCustomVizFeature />} />
+        <Route path="/codex/operations" element={<CodexOperationsFeature />} />
+
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
           <Route index element={<Navigate to="/dashboard" />} />
@@ -46,6 +71,23 @@ export default function App() {
           <Route path="microgravity-products" element={<MicrogravityProductsPage />} />
           <Route path="servicing" element={<ServicingPage />} />
           <Route path="custom-views" element={<CustomViewsPage />} />
+
+          {/* Apply pass 7 — audit-gap feature pages (cf + gap) */}
+          <Route path="gap/regolith-process-optimizer" element={<GapRegolithProcessOptimizer />} />
+          <Route path="gap/lunar-night-power" element={<GapLunarNightPower />} />
+          <Route path="gap/orbital-mechanics-routing" element={<GapOrbitalMechanicsRouting />} />
+          <Route path="gap/print-quality-predictor" element={<GapPrintQualityPredictor />} />
+          <Route path="gap/crew-task-sequencer" element={<GapCrewTaskSequencer />} />
+          <Route path="gap/simulation-twin" element={<GapSimulationTwin />} />
+          <Route path="gap/comms-latency-queue" element={<GapCommsLatencyQueue />} />
+          <Route path="gap/mission-video-stream" element={<GapMissionVideoStream />} />
+          <Route path="gap/isru-yield" element={<GapIsruYield />} />
+          <Route path="gap/print-cad-upload" element={<GapPrintCadUpload />} />
+          <Route path="cf/regolith-electrolysis" element={<CfRegolithElectrolysis />} />
+          <Route path="cf/lunar-hibernation" element={<CfLunarHibernation />} />
+          <Route path="cf/lunar-marketplace" element={<CfLunarMarketplace />} />
+          <Route path="cf/teleop-eva-agent" element={<CfTeleopEvaAgent />} />
+          <Route path="cf/isru-cert-pipeline" element={<CfIsruCertPipeline />} />
         </Route>
       </Routes>
     </BrowserRouter>

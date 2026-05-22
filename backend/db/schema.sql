@@ -241,3 +241,16 @@ CREATE TABLE IF NOT EXISTS rendezvous_events (
   delta_v_mps DECIMAL,
   notes TEXT
 );
+
+-- Apply pass 7 (2026-05-21): codify the lazily-created table used by every
+-- cf-* / gap-* audit-feature route. Each route also runs CREATE TABLE IF NOT
+-- EXISTS at request time; this entry just brings the schema dump into sync.
+CREATE TABLE IF NOT EXISTS gap_features (
+  id SERIAL PRIMARY KEY,
+  feature_slug TEXT NOT NULL,
+  user_id INTEGER,
+  input JSONB,
+  output TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS gap_features_slug_idx ON gap_features (feature_slug, created_at DESC);

@@ -1,52 +1,61 @@
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
-const app = express();
+const { getRuntimeConfig } = require('./lib/runtime-config');
 
-app.use(cors());
-app.use(express.json());
+function createApp() {
+  const config = getRuntimeConfig();
+  const app = express();
+  app.disable('x-powered-by');
+  app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    next();
+  });
+  app.use(cors({
+    credentials: false,
+    origin(origin, callback) {
+      if (!origin || config.corsOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error('Origin is not allowed'));
+    },
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Authorization', 'Content-Type'],
+    maxAge: 600,
+  }));
+  app.use(express.json({ limit: '256kb', strict: true }));
 
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/ai', require('./routes/ai'));
-app.use('/api/ai', require('./routes/ai_extras'));
-app.use('/api/bases', require('./routes/bases'));
-app.use('/api/mining', require('./routes/mining'));
-app.use('/api/resources', require('./routes/resources'));
-app.use('/api/print_jobs', require('./routes/print_jobs'));
-app.use('/api/equipment', require('./routes/equipment'));
-app.use('/api/missions', require('./routes/missions'));
-app.use('/api/util', require('./routes/utilities'));
-app.use('/api/admin', require('./routes/sample_data'));
-app.use('/api/dashboard', require('./routes/dashboard'));
+  app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'lunarbase-governed-manufacturing' }));
+  app.use('/api/auth', require('./routes/auth'));
+  app.use('/api/workflow', require('./routes/manufacturing'));
+  app.use('/api', (_req, res) => res.status(410).json({
+    error: 'This prototype or generated surface is disabled. Use the governed /api/workflow manufacturing journey.',
+    code: 'UNSUPPORTED_SURFACE',
+  }));
 
-const PORT = process.env.PORT || 3010;
-app.listen(PORT, () => console.log(`LunarBase API running on port ${PORT}`));
-app.use('/api/gap-ai-regolith-process-optimizer', require('./routes/gap-ai-regolith-process-optimizer'));
-app.use('/api/gap-ai-lunar-night-power', require('./routes/gap-ai-lunar-night-power'));
-app.use('/api/gap-ai-orbital-mechanics-routing', require('./routes/gap-ai-orbital-mechanics-routing'));
-app.use('/api/gap-ai-print-quality-predictor', require('./routes/gap-ai-print-quality-predictor'));
-app.use('/api/gap-ai-crew-task-sequencer', require('./routes/gap-ai-crew-task-sequencer'));
-app.use('/api/gap-nonai-simulation-twin', require('./routes/gap-nonai-simulation-twin'));
-app.use('/api/gap-nonai-comms-latency-queue', require('./routes/gap-nonai-comms-latency-queue'));
-app.use('/api/gap-nonai-mission-video-stream', require('./routes/gap-nonai-mission-video-stream'));
-app.use('/api/gap-nonai-isru-yield', require('./routes/gap-nonai-isru-yield'));
-app.use('/api/gap-nonai-print-cad-upload', require('./routes/gap-nonai-print-cad-upload'));
-app.use('/api/cf-regolith-electrolysis', require('./routes/cf-regolith-electrolysis'));
-app.use('/api/cf-lunar-hibernation', require('./routes/cf-lunar-hibernation'));
-app.use('/api/cf-lunar-marketplace', require('./routes/cf-lunar-marketplace'));
-app.use('/api/cf-teleop-eva-agent', require('./routes/cf-teleop-eva-agent'));
-app.use('/api/cf-isru-cert-pipeline', require('./routes/cf-isru-cert-pipeline'));
+  const frontend = process.env.FRONTEND_DIST || path.join(__dirname, '../frontend/dist');
+  if (fs.existsSync(frontend)) {
+    app.use(express.static(frontend, { index: false, maxAge: '1h' }));
+    app.get('*', (req, res, next) => req.path.startsWith('/api/') ? next() : res.sendFile(path.join(frontend, 'index.html')));
+  }
+  app.use((error, _req, res, _next) => {
+    if (error.message === 'Origin is not allowed') return res.status(403).json({ error: 'Origin is not allowed' });
+    console.error('Unhandled request error', error);
+    return res.status(500).json({ error: 'Service unavailable' });
+  });
+  return app;
+}
 
-// Audit-implementation deep features (2026-05-14)
-app.use('/api/orbital-platforms', require('./routes/orbital-platforms'));
-app.use('/api/isru', require('./routes/isru'));
-app.use('/api/launch-economics', require('./routes/launch-economics'));
-app.use('/api/microgravity-products', require('./routes/microgravity-products'));
-app.use('/api/servicing', require('./routes/servicing'));
+if (require.main === module) {
+  const app = createApp();
+  const port = Number(process.env.PORT || 3010);
+  const server = app.listen(port, process.env.HOST || '127.0.0.1', () => console.log(`LunarBase governed manufacturing API listening on ${port}`));
+  const shutdown = () => server.close(() => process.exit(0));
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
+}
 
-// Custom Views — space capability aggregations (2026-05-18)
-app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'lunarbase-api', ts: Date.now() }));
-app.use('/api/custom-views', require('./routes/customViews'));
-
-// 404 fallback — MUST be after all routes
-app.use('/api', (req, res) => res.status(404).json({ error: 'Not Found', path: req.originalUrl }));
+module.exports = { createApp };

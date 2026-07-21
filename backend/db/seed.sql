@@ -1,9 +1,5 @@
 -- Seed data for LunarBase
 
-INSERT INTO users (email, password, name) VALUES
-('admin@demo.com', '$2b$10$e4dPQpe3XIDluCZCv3b3iu/H/3f816tgim6l5ly5k7pChHG235Dey', 'Mission Control Admin')
-ON CONFLICT (email) DO NOTHING;
-
 -- Missions
 INSERT INTO missions (name, objective, crew_size, launch_date, landing_date, return_date, status, agency, budget_billions, current_phase) VALUES
 ('Artemis V Polar Survey', 'Establish permanent south pole habitat and begin water ice extraction', 4, '2026-03-15', '2026-04-02', '2026-05-20', 'planning', 'NASA', 8.5, 'Mission Design Phase'),

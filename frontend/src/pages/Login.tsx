@@ -17,14 +17,9 @@ export default function Login() {
       const res = await api.login(email, password);
       localStorage.setItem('token', res.token);
       localStorage.setItem('user', JSON.stringify(res.user));
-      navigate('/bases');
+      navigate('/print_jobs');
     } catch (err: unknown) { setError(err instanceof Error ? err.message : 'Login failed'); }
     finally { setLoading(false); }
-  };
-
-  const demoLogin = () => {
-    setEmail('admin@demo.com'); setPassword('demo123');
-    setTimeout(() => document.getElementById('lf')?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })), 50);
   };
 
   return (
@@ -57,9 +52,7 @@ export default function Login() {
               {loading ? 'Authenticating...' : 'Access Terminal'}
             </button>
           </form>
-          <button onClick={demoLogin} className="w-full mt-3 border border-gray-700 hover:border-gray-600 text-gray-300 font-medium py-2.5 rounded-lg transition-colors">
-            Demo Login
-          </button>
+          <p className="mt-4 text-xs text-gray-500">Accounts and base access are provisioned by mission operations. No shared demo account is enabled.</p>
         </div>
       </div>
     </div>

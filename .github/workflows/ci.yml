@@ -1,0 +1,72 @@
+name: governed-manufacturing-ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: lunarbase_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d lunarbase_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lunarbase_test
+      CORS_ALLOWED_ORIGINS: http://localhost:5174
+      CERTIFICATE_ALLOWED_HOSTS: certs.example.test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+      - name: Generate ephemeral test secret
+        run: echo "JWT_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+      - name: Install locked dependencies
+        run: |
+          npm --prefix backend ci
+          npm --prefix frontend ci
+      - name: Create baseline and reference data
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f backend/db/schema.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f backend/db/seed.sql
+      - name: Apply and repeat migrations
+        run: |
+          npm --prefix backend run migrate
+          npm --prefix backend run migrate
+          ./scripts/verify-schema-controls.sh
+      - name: Test backend workflows
+        run: npm --prefix backend test
+      - name: Build operator console
+        run: npm --prefix frontend run build
+      - name: Audit production dependencies
+        run: |
+          npm --prefix backend audit --omit=dev --audit-level=low
+          npm --prefix frontend audit --omit=dev --audit-level=low
+      - name: Build unprivileged runtime image
+        run: docker build -t lunarbase-governed:${{ github.sha }} .
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2

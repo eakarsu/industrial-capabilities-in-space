@@ -1,4 +1,29 @@
-export interface User { id: number; email: string; name: string; }
+export interface User { id: number; email: string; name: string; role?: 'OPERATOR' | 'QUALITY' | 'APPROVER' | 'ADMIN'; }
+
+export interface MaterialLot {
+  id: number; base_id: number; lot_code: string; material_type: string;
+  quantity_received_kg: number; quantity_available_kg: number; purity_pct: number;
+  status: string; storage_location: string; source_system: string; source_record_id: string;
+  certificate_url: string; received_at: string; version: number;
+}
+
+export interface ManufacturingInspection {
+  id: number; quality_score: number; measured_mass_kg: number; dimensional_variance_pct: number;
+  defect_count: number; findings: string; evidence_url: string;
+  rules: Array<{ rule: string; passed: boolean; actual: unknown; limit: string }>;
+  blockers: string[]; decision?: string; decision_reason?: string;
+}
+
+export interface ManufacturingWorkOrder {
+  id: number; base_id: number; base_name: string; work_order_code: string; part_number: string;
+  revision: string; description: string; required_material_type: string; material_required_kg: number;
+  min_purity_pct: number; expected_mass_kg: number; mass_tolerance_pct: number;
+  temperature_min_c: number; temperature_max_c: number; max_vibration_mm_s: number;
+  status: string; version: number; allocated_kg?: number; latest_blockers?: string[];
+  allocations?: Array<Record<string, unknown>>; telemetry?: Array<Record<string, unknown>>;
+  inspections?: ManufacturingInspection[]; changeOrders?: Array<Record<string, unknown>>;
+  events?: Array<Record<string, unknown>>;
+}
 
 export interface Mission {
   id: number; name: string; objective: string; crew_size: number;

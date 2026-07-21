@@ -1,0 +1,11 @@
+.git
+.github
+.env
+**/node_modules
+**/dist
+backend/test
+frontend/src/pages/Gap*
+frontend/src/pages/Cf*
+*.log
+_COMPLETENESS_REVIEW.md
+_AUDIT_NOTE.md

@@ -31,6 +31,7 @@ function createApp() {
   app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'lunarbase-governed-manufacturing' }));
   app.use('/api/auth', require('./routes/auth'));
   app.use('/api/workflow', require('./routes/manufacturing'));
+  app.use('/api/runtime-ai', require('./routes/runtimeAi'));
   app.use('/api', (_req, res) => res.status(410).json({
     error: 'This prototype or generated surface is disabled. Use the governed /api/workflow manufacturing journey.',
     code: 'UNSUPPORTED_SURFACE',

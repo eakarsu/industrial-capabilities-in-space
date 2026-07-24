@@ -5,9 +5,12 @@ const db = require('../db');
 
 async function main() {
   const directory = path.join(__dirname, '../db/migrations');
+  const baseline = fs.readFileSync(path.join(__dirname, '../db/schema.sql'), 'utf8');
   const files = fs.readdirSync(directory).filter((file) => file.endsWith('.sql')).sort();
   const client = await db.connect();
   try {
+    await client.query(baseline);
+    console.log('applied baseline schema');
     await client.query(`CREATE TABLE IF NOT EXISTS schema_migrations (
       name TEXT PRIMARY KEY, checksum CHAR(64) NOT NULL, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )`);

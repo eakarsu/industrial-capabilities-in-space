@@ -58,7 +58,7 @@ export default function Login() {
               Auto Fill Demo Credentials
             </button>
             <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors disabled:opacity-50">
-              {loading ? 'Authenticating...' : 'Access Terminal'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
           <p className="mt-4 text-xs text-gray-500">Accounts and base access are provisioned by mission operations. No shared demo account is enabled.</p>

@@ -55,6 +55,8 @@ export const industrial = {
 
 export const api = {
   login: (email: string, password: string) => apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  demoAvailability: (): Promise<{ available: boolean }> => apiFetch('/auth/demo-availability'),
+  demoLogin: () => apiFetch('/auth/demo-login', { method: 'POST' }),
   getBases: () => apiFetch('/bases'), getBase: (id: number) => apiFetch(`/bases/${id}`),
   createBase: (d: unknown) => apiFetch('/bases', { method: 'POST', body: JSON.stringify(d) }),
   updateBase: (id: number, d: unknown) => apiFetch(`/bases/${id}`, { method: 'PUT', body: JSON.stringify(d) }),

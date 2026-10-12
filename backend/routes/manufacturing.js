@@ -129,9 +129,11 @@ router.use(verifyToken);
 router.get('/bases', async (req, res, next) => {
   try {
     const result = req.user.role === 'ADMIN'
-      ? await db.query('SELECT id,name,location,status FROM bases ORDER BY name')
+      ? await db.query(`SELECT b.id,b.name,b.location,b.status FROM bases b
+          ORDER BY (SELECT COUNT(*) FROM manufacturing_work_orders wo WHERE wo.base_id=b.id) DESC, b.name`)
       : await db.query(`SELECT b.id,b.name,b.location,b.status FROM bases b
-          JOIN user_base_access a ON a.base_id=b.id WHERE a.user_id=$1 ORDER BY b.name`, [req.user.id]);
+          JOIN user_base_access a ON a.base_id=b.id WHERE a.user_id=$1
+          ORDER BY (SELECT COUNT(*) FROM manufacturing_work_orders wo WHERE wo.base_id=b.id) DESC, b.name`, [req.user.id]);
     res.json(result.rows);
   } catch (error) { next(error); }
 });

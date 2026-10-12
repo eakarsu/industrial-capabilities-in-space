@@ -1,24 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api';
 import { Moon } from 'lucide-react';
 
 export default function Login() {
+  const [demoAvailable, setDemoAvailable] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => { api.demoAvailability().then((status) => setDemoAvailable(status.available)).catch(() => setDemoAvailable(false)); }, []);
+
+  const finishSignIn = (res: { token: string; user: unknown }) => {
+    localStorage.setItem('token', res.token);
+    localStorage.setItem('user', JSON.stringify(res.user));
+    navigate('/print_jobs');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true); setError('');
     try {
       const res = await api.login(email, password);
-      localStorage.setItem('token', res.token);
-      localStorage.setItem('user', JSON.stringify(res.user));
-      navigate('/print_jobs');
+      finishSignIn(res);
     } catch (err: unknown) { setError(err instanceof Error ? err.message : 'Login failed'); }
+    finally { setLoading(false); }
+  };
+
+  const handleDemoSignIn = async () => {
+    setLoading(true); setError('');
+    try { finishSignIn(await api.demoLogin()); }
+    catch (err: unknown) { setError(err instanceof Error ? err.message : 'Demo sign-in failed'); }
     finally { setLoading(false); }
   };
 
@@ -50,18 +64,18 @@ export default function Login() {
             {error && <p className="text-red-400 text-sm">{error}</p>}
             <button
               type="button"
-              onClick={() => { setEmail(import.meta.env.VITE_DEMO_EMAIL || ''); setPassword(import.meta.env.VITE_DEMO_PASSWORD || ''); }}
-              disabled={!import.meta.env.VITE_DEMO_EMAIL || !import.meta.env.VITE_DEMO_PASSWORD}
-              aria-label="Auto Fill Demo Credentials"
+              onClick={handleDemoSignIn}
+              disabled={!demoAvailable || loading}
+              aria-label="Sign in with configured demo account"
               style={{ width: '100%', marginBottom: '12px', padding: '10px 14px', borderRadius: '8px', border: '1px solid currentColor', background: 'transparent', cursor: 'pointer' }}
             >
-              Auto Fill Demo Credentials
+              Sign in with demo account
             </button>
             <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors disabled:opacity-50">
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-          <p className="mt-4 text-xs text-gray-500">Accounts and base access are provisioned by mission operations. No shared demo account is enabled.</p>
+          <p className="mt-4 text-xs text-gray-500">{demoAvailable ? 'Uses the configured local demo account.' : 'Local demo sign-in is unavailable. Accounts and base access are provisioned by mission operations.'}</p>
         </div>
       </div>
     </div>

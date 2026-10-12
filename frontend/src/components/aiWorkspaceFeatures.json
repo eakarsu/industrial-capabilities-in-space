@@ -1,0 +1,107 @@
+[
+  {
+    "name": "CfIsruCertPipeline",
+    "id": "cf-isru-cert-pipeline",
+    "title": "ISRU Certification Pipeline",
+    "description": "Prepare a professional advisory report for isru certification pipeline using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "CfLunarHibernation",
+    "id": "cf-lunar-hibernation",
+    "title": "Lunar Night Hibernation Scheduler",
+    "description": "Prepare a professional advisory report for lunar night hibernation scheduler using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "CfLunarMarketplace",
+    "id": "cf-lunar-marketplace",
+    "title": "Lunar Supply Chain Marketplace",
+    "description": "Prepare a professional advisory report for lunar supply chain marketplace using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "CfRegolithElectrolysis",
+    "id": "cf-regolith-electrolysis",
+    "title": "Regolith Electrolysis Tuner",
+    "description": "Prepare a professional advisory report for regolith electrolysis tuner using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "CfTeleopEvaAgent",
+    "id": "cf-teleop-eva-agent",
+    "title": "Crew / Teleop EVA Agent",
+    "description": "Prepare a professional advisory report for crew / teleop eva agent using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapCommsLatencyQueue",
+    "id": "gap-nonai-comms-latency-queue",
+    "title": "Comms-Latency Command Queue",
+    "description": "Prepare a professional advisory report for comms-latency command queue using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapCrewTaskSequencer",
+    "id": "gap-ai-crew-task-sequencer",
+    "title": "Crew Task Sequencer",
+    "description": "Prepare a professional advisory report for crew task sequencer using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapIsruYield",
+    "id": "gap-nonai-isru-yield",
+    "title": "ISRU Yield Tracking",
+    "description": "Prepare a professional advisory report for isru yield tracking using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapLunarNightPower",
+    "id": "gap-ai-lunar-night-power",
+    "title": "Lunar Night Power Planner",
+    "description": "Prepare a professional advisory report for lunar night power planner using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapMissionVideoStream",
+    "id": "gap-nonai-mission-video-stream",
+    "title": "Mission Control Video Stream",
+    "description": "Prepare a professional advisory report for mission control video stream using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapOrbitalMechanicsRouting",
+    "id": "gap-ai-orbital-mechanics-routing",
+    "title": "Orbital Mechanics Route Planner",
+    "description": "Prepare a professional advisory report for orbital mechanics route planner using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapPrintCadUpload",
+    "id": "gap-nonai-print-cad-upload",
+    "title": "Print CAD Upload",
+    "description": "Prepare a professional advisory report for print cad upload using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapPrintQualityPredictor",
+    "id": "gap-ai-print-quality-predictor",
+    "title": "Print Quality Predictor",
+    "description": "Prepare a professional advisory report for print quality predictor using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapRegolithProcessOptimizer",
+    "id": "gap-ai-regolith-process-optimizer",
+    "title": "Molten Regolith Process Optimizer",
+    "description": "Prepare a professional advisory report for molten regolith process optimizer using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapSimulationTwin",
+    "id": "gap-nonai-simulation-twin",
+    "title": "Simulation / Digital Twin",
+    "description": "Prepare a professional advisory report for simulation / digital twin using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  }
+]

@@ -26,6 +26,14 @@ function Modal({ title, children, onClose }: { title: string; children: React.Re
 const field = 'w-full bg-gray-950 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm';
 const button = 'px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-40';
 
+function recordRows<T>(payload: unknown, label: string): T[] {
+  const rows = Array.isArray(payload) ? payload :
+    payload && typeof payload === 'object' && 'items' in payload ? payload.items :
+    payload && typeof payload === 'object' && 'data' in payload ? payload.data : undefined;
+  if (!Array.isArray(rows)) throw new Error(`${label} response did not contain a record list`);
+  return rows as T[];
+}
+
 export default function PrintJobsPage() {
   const user: User = JSON.parse(localStorage.getItem('user') || '{}');
   const [bases, setBases] = useState<Base[]>([]);
@@ -46,12 +54,14 @@ export default function PrintJobsPage() {
     try {
       setError('');
       const [workOrders, materialLots] = await Promise.all([api.workflow.getWorkOrders(baseId), api.workflow.getLots(baseId)]);
-      setOrders(workOrders.items); setLots(materialLots.items);
+      const nextOrders = recordRows<ManufacturingWorkOrder>(workOrders, 'Work orders');
+      const nextLots = recordRows<MaterialLot>(materialLots, 'Material lots');
+      setOrders(nextOrders); setLots(nextLots);
       if (selected) setSelected(await api.workflow.getWorkOrder(selected.id));
     } catch (caught) { setError(caught instanceof Error ? caught.message : 'Unable to load workflow'); }
   }, [baseId, selected?.id]);
 
-  useEffect(() => { api.workflow.getBases().then((items: Base[]) => { setBases(items); if (items[0]) setBaseId(items[0].id); }).catch((caught: Error) => setError(caught.message)); }, []);
+  useEffect(() => { api.workflow.getBases().then((response: unknown) => { const items = recordRows<Base>(response, 'Bases'); setBases(items); if (items[0]) setBaseId(items[0].id); }).catch((caught: Error) => setError(caught.message)); }, []);
   useEffect(() => { reload(); }, [baseId]);
 
   const activeLots = useMemo(() => lots.filter((lot) => lot.status === 'AVAILABLE' && Number(lot.quantity_available_kg) > 0), [lots]);

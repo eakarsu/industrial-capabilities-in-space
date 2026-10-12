@@ -1,3 +1,4 @@
+import AIReportLibrary from "./AIReportLibrary";
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { Moon, Printer, LogOut, ShieldCheck } from 'lucide-react';
 
@@ -25,7 +26,7 @@ export default function Layout() {
           <div><div className="text-white text-xs font-medium">{user.name || 'User'}</div><div className="text-gray-500 text-xs">{user.role}</div></div>
           <button aria-label="Log out" onClick={logout} className="text-gray-500 hover:text-red-400"><LogOut className="w-4 h-4" /></button>
         </div>
-      </aside>
+      <AIReportLibrary /></aside>
       <main className="flex-1 overflow-auto bg-gray-950"><Outlet /></main>
     </div>
   );

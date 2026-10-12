@@ -76,6 +76,16 @@ export default function AICenterPage() {
   ];
 
   const selectedOp = mining.find(m => String(m.id) === miningOpId);
+  const selectedBase = bases.find(b => String(b.id) === exBaseId);
+  const fillExtraction = (resource: string) => {
+    if (!selectedBase && bases.length) setExBaseId(String(bases[0].id));
+    setExResource(resource);
+  };
+  const miningPresets = [
+    { label: 'Highest throughput', op: [...mining].sort((a, b) => Number(b.regolith_kg_per_hour) - Number(a.regolith_kg_per_hour))[0] },
+    { label: 'Highest energy use', op: [...mining].sort((a, b) => Number(b.energy_kw_consumed) - Number(a.energy_kw_consumed))[0] },
+    { label: 'Most recent record', op: [...mining].sort((a, b) => b.id - a.id)[0] },
+  ];
 
   return (
     <div className="p-6">
@@ -102,13 +112,10 @@ export default function AICenterPage() {
               <h2 className="text-white font-semibold">Extraction Plan Generator</h2>
               <p className="text-gray-400 text-sm">Optimize resource extraction schedule for maximum yield.</p>
               <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={() => { if (bases[0]) setExBaseId(String(bases[0].id)); setExResource('water_ice'); }}
-                  className="text-xs px-3 py-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-md text-gray-300">Shackleton Ice</button>
-                <button type="button" onClick={() => { if (bases[0]) setExBaseId(String(bases[0].id)); setExResource('helium3'); }}
-                  className="text-xs px-3 py-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-md text-gray-300">Mare He-3</button>
-                <button type="button" onClick={() => { if (bases[0]) setExBaseId(String(bases[0].id)); setExResource('titanium'); }}
-                  className="text-xs px-3 py-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-md text-gray-300">Ilmenite Ti</button>
+                {(['water_ice', 'helium3', 'titanium'] as const).map(resource => <button key={resource} type="button" disabled={!bases.length} onClick={() => fillExtraction(resource)}
+                  className="text-xs px-3 py-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-md text-gray-300 disabled:opacity-50">{resource === 'water_ice' ? 'Water ice' : resource === 'helium3' ? 'Helium-3' : 'Titanium'} target</button>)}
               </div>
+              {!bases.length && <p className="text-amber-300 text-xs">A saved base is required for extraction presets.</p>}
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Base</label>
                 <select value={exBaseId} onChange={e => setExBaseId(e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500">
@@ -121,7 +128,7 @@ export default function AICenterPage() {
                   {['water_ice','silicon','aluminum','iron','titanium','oxygen','helium3','regolith'].map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
-              <button onClick={() => run(() => api.aiExtractionPlan({ base_id: exBaseId, target_resource: exResource, available_equipment: equipment.filter(e => String(e.id) === exBaseId || true).slice(0,5) }))} disabled={loading}
+              <button onClick={() => run(() => api.aiExtractionPlan({ base_id: exBaseId, target_resource: exResource, available_equipment: equipment.filter(e => String(e.id) === exBaseId || true).slice(0,5) }))} disabled={loading || !selectedBase}
                 className="w-full bg-violet-600 hover:bg-violet-700 text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50">
                 Generate Extraction Plan
               </button>
@@ -190,6 +197,8 @@ export default function AICenterPage() {
             <div className="space-y-4">
               <h2 className="text-white font-semibold">Mining Yield Predictor</h2>
               <p className="text-gray-400 text-sm">Forecast 30-day yield for an active mining op using current rates and energy data.</p>
+              <div className="flex flex-wrap gap-2">{miningPresets.map(preset => <button key={preset.label} type="button" disabled={!preset.op} onClick={() => preset.op && setMiningOpId(String(preset.op.id))} className="text-xs px-3 py-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-md text-gray-300 disabled:opacity-50">{preset.label}</button>)}</div>
+              {!mining.length && <p className="text-amber-300 text-xs">A saved mining operation is required for yield presets.</p>}
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Mining Operation</label>
                 <select value={miningOpId} onChange={e => setMiningOpId(e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500">

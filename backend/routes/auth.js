@@ -22,8 +22,7 @@ function loginRateLimit(req, res, next) {
   return next();
 }
 
-router.post('/login', loginRateLimit, async (req, res) => {
-  const { email, password } = req.body;
+async function signIn(req, res, email, password) {
   if (typeof email !== 'string' || typeof password !== 'string' || email.length > 255 || password.length > 200) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
@@ -44,6 +43,20 @@ router.post('/login', loginRateLimit, async (req, res) => {
     console.error('Login failed', error);
     res.status(500).json({ error: 'Authentication service unavailable' });
   }
+}
+
+router.post('/login', loginRateLimit, (req, res) => signIn(req, res, req.body?.email, req.body?.password));
+
+// The configured demo account remains server-side and is usable only during local development.
+function localDemoAvailable(req) {
+  return process.env.NODE_ENV !== 'production' &&
+    (req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1') &&
+    Boolean(process.env.DEMO_EMAIL && process.env.DEMO_PASSWORD);
+}
+router.get('/demo-availability', (req, res) => res.json({ available: localDemoAvailable(req) }));
+router.post('/demo-login', loginRateLimit, (req, res) => {
+  if (!localDemoAvailable(req)) return res.status(403).json({ error: 'Local demo sign-in is unavailable.' });
+  return signIn(req, res, process.env.DEMO_EMAIL, process.env.DEMO_PASSWORD);
 });
 
 router.get('/me', authenticate, (req, res) => res.json({ user: req.user }));

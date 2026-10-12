@@ -32,7 +32,15 @@ function createApp() {
   app.use('/api/auth', require('./routes/auth'));
   app.use('/api/workflow', require('./routes/manufacturing'));
   app.use('/api/runtime-ai', require('./routes/runtimeAi'));
-  app.use('/api', (_req, res) => res.status(410).json({
+
+// Advisory AI reports only; native execution and approval routes stay unchanged.
+const aiWorkspaceSupport = require("./aiWorkspaceAdapters.cjs");
+const aiWorkspaceDatabase = require("./db.js");
+app.use('/api/report-workspace', require("./aiWorkspace.cjs").createAIWorkspaceRouter({
+  pool: aiWorkspaceDatabase, authenticateToken: aiWorkspaceSupport.verifiedActorAuth(require("./middleware/auth.js")),
+  aiRateLimiter: aiWorkspaceSupport.createWorkspaceLimiter(), features: require("./aiWorkspaceFeatures.json"),
+}));
+app.use('/api', (_req, res) => res.status(410).json({
     error: 'This prototype or generated surface is disabled. Use the governed /api/workflow manufacturing journey.',
     code: 'UNSUPPORTED_SURFACE',
   }));

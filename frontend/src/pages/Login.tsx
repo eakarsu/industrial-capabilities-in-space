@@ -29,6 +29,18 @@ export default function Login() {
     finally { setLoading(false); }
   };
 
+  const demoEmail = import.meta.env.VITE_DEMO_EMAIL;
+  const demoPassword = import.meta.env.VITE_DEMO_PASSWORD;
+
+  const handleDemoFill = async () => {
+    if (demoEmail && demoPassword) { setEmail(demoEmail); setPassword(demoPassword); return; }
+    try {
+      const res = await fetch('/api/auth/demo-credentials', { cache: 'no-store' });
+      if (res.ok) { const data = await res.json(); if (data.email && data.password) { setEmail(data.email); setPassword(data.password); return; } }
+    } catch { /* fallback below */ }
+    setError('Demo credentials are not configured for this environment.');
+  };
+
   const handleDemoSignIn = async () => {
     setLoading(true); setError('');
     try { finishSignIn(await api.demoLogin()); }
@@ -62,6 +74,14 @@ export default function Login() {
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500" />
             </div>
             {error && <p className="text-red-400 text-sm">{error}</p>}
+            <button
+                type="button"
+                onClick={handleDemoFill}
+                aria-label="Fill demo credentials"
+                style={{ width: '100%', marginBottom: '12px', padding: '10px 14px', borderRadius: '8px', border: '1px solid currentColor', background: 'transparent', cursor: 'pointer' }}
+              >
+                Fill demo credentials
+              </button>
             <button
               type="button"
               onClick={handleDemoSignIn}
